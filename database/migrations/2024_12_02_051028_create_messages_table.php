@@ -13,9 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('profile_infos', function (Blueprint $table) {
+        Schema::create('messages', function (Blueprint $table) {
             $table->id();
+            $table->integer('acc_id');
+            $table->integer('sender_id');
+            $table->integer('reciever_id');
+            $table->text('content');
+            $table->boolean('is_read');
             $table->timestamps();
+            $table->boolean('delete')->default(0);
         });
     }
 
@@ -26,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('profile_infos');
+        Schema::dropIfExists('messages');
     }
 };
