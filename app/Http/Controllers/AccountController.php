@@ -104,7 +104,7 @@ class AccountController extends Controller
                     ]);
                 } else {
                     return response()->json([
-                        'message' => 'Your account is still not enable, Please wait for your account to be verify. Thank you',
+                        'message' => 'Your account is still not verify, Thank you!',
                         'status' => -2
                     ]);
                 }
