@@ -19,8 +19,9 @@ return new class extends Migration
             $table->string('fullname'); // Full name
             $table->string('type'); // type of user
             $table->string('password'); // password
+            $table->string('email'); // email which verified
             $table->string('email_verified_at'); // email which verified
-            $table->string('is_verify'); // verified account
+            $table->boolean('is_verify')->default(0); // verified account
             $table->timestamps();
             $table->boolean('delete')->default(0);
         });

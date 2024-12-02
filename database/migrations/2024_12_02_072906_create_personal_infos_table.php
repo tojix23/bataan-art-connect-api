@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('personal_information', function (Blueprint $table) {
+        Schema::create('personal_infos', function (Blueprint $table) {
             $table->id(); // Primary key: ID
             $table->string('first_name'); // First Name
             $table->string('last_name'); // Last Name
@@ -38,6 +38,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('personal_information');
+        Schema::dropIfExists('personal_infos');
     }
 };
