@@ -8,6 +8,7 @@ use App\Models\PersonalInfo;
 use App\Models\Account;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use App\Models\Certificate;
 
 class AccountController extends Controller
 {
@@ -22,7 +23,7 @@ class AccountController extends Controller
             'occupation' => 'required|string|max:255',
             'role' => 'required|string|max:255',
             'gender' => 'required|string|max:50', // Gender usually doesn't need 255 characters
-            'contact_number' => 'required|string|max:15', // Phone numbers typically have a shorter max length
+            'contact_number' => 'required|string|max:15|unique:personal_infos,contact_number', // Phone numbers typically have a shorter max length
             'birthdate' => 'required|date', // Validate as a valid date
             'type' => 'required|string|max:50', // Adjusted to string unless it's really an email
             'email' => 'required|email|unique:personal_infos,email', // Added email field explicitly
@@ -65,6 +66,18 @@ class AccountController extends Controller
                 'password' => Hash::make($request->password), // Hash the password for security
             ]);
 
+            $certificateFilePath = null;
+            if ($request->hasFile('certificate_file')) {
+                $certificateFile = $request->file('certificate_file');
+                $certificateFilePath = $certificateFile->store('certificates', 'public'); // Store in the 'public/certificates' directory
+            }
+            // Save file path to certificates table
+            if ($certificateFilePath) {
+                Certificate::create([
+                    'acc_id' => $account->id, // Assuming acc_id links to the account ID
+                    'file_path' => $certificateFilePath,
+                ]);
+            }
             DB::commit();
 
             // Return success response
@@ -72,7 +85,8 @@ class AccountController extends Controller
                 'message' => 'User registered successfully.',
                 'data' => [
                     'Info' => $personalInformation,
-                    'account' => $account
+                    'account' => $account,
+                    'certificate' => $certificateFilePath
                 ],
                 'status' => 201,
             ], 201);
