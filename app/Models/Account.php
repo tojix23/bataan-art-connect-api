@@ -13,6 +13,7 @@ class Account extends Authenticatable
 {
     use HasApiTokens, HasFactory;
     protected $table = 'accounts';
+    protected $appends = ['role'];
     protected $fillable = [
         'personal_id',
         'fullname',
@@ -35,5 +36,10 @@ class Account extends Authenticatable
     public function profilePhoto()
     {
         return $this->hasOne(ProfilePhoto::class, 'acc_id', 'id'); // Assuming email is the linking field
+    }
+    // Define the accessor for 'role'
+    public function getRoleAttribute()
+    {
+        return $this->personalInfo?->role; // Use the relationship to fetch 'role'
     }
 }

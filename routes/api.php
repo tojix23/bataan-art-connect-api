@@ -24,3 +24,11 @@ Route::post('/login', [AccountController::class, 'login']);
 Route::prefix('profile')->middleware('auth:sanctum')->group(function () {
     Route::post('/photo', [ProfilePhotoController::class, 'upload']);
 });
+
+Route::prefix('list')->middleware('auth:sanctum')->group(function () {
+    Route::get('/pending-users', [AccountController::class, 'pending_users']);
+});
+
+Route::prefix('account')->middleware('auth:sanctum')->group(function () {
+    Route::post('/verify-users', [AccountController::class, 'verify']);
+});

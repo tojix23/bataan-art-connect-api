@@ -162,4 +162,42 @@ class AccountController extends Controller
             ]);
         }
     }
+
+    public function pending_users(Request $request)
+    {
+
+        $accounts = Account::with('personalInfo') // Eager load personalInfo relationship
+            ->where('is_verify', false) // Filter by unverified users
+            ->get();
+        return response()->json([
+            'message' => 'pending users',
+            'data' => $accounts,
+            'status' => 1
+        ]);
+    }
+
+    public function verify(Request $request)
+    {
+        // Find the account by ID
+        $account = Account::find($request->id);
+
+        // Check if the account exists
+        if (!$account) {
+            return response()->json([
+                'message' => 'Account not found',
+                'status' => 0
+            ], 404);
+        }
+
+        // Update the 'is_verify' status to true (1)
+        $account->is_verify = 1;
+        $account->save(); // Save the changes
+
+        // Return success response
+        return response()->json([
+            'message' => 'User verified successfully',
+            'status' => 1,
+            'data' => $account // Optional: you can return the updated account data
+        ]);
+    }
 }
