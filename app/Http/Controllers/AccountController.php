@@ -166,7 +166,7 @@ class AccountController extends Controller
     public function pending_users(Request $request)
     {
 
-        $accounts = Account::with('personalInfo') // Eager load personalInfo relationship
+        $accounts = Account::with(['personalInfo', 'certificate']) // Eager load personalInfo relationship
             ->where('is_verify', false) // Filter by unverified users
             ->get();
         return response()->json([
@@ -196,6 +196,72 @@ class AccountController extends Controller
         // Return success response
         return response()->json([
             'message' => 'User verified successfully',
+            'status' => 1,
+            'data' => $account // Optional: you can return the updated account data
+        ]);
+    }
+
+    public function cancel_verify(Request $request)
+    {
+        // Find the account by email
+        $account = PersonalInfo::where('email', $request->email)->first();
+
+        // Check if the account exists
+        if (!$account) {
+            return response()->json([
+                'message' => 'Account not found',
+                'status' => 0
+            ], 404);
+        }
+
+        // Update the 'delete' status to true (1)
+        $account->delete = 1;
+        $account->save(); // Save the changes
+
+        // Return success response
+        return response()->json([
+            'message' => 'User verification cancelled successfully',
+            'status' => 1,
+            'data' => $account // Optional: you can return the updated account data
+        ]);
+    }
+
+    public function registered_account(Request $request)
+    {
+        // Retrieve accounts that are verified and have a related PersonalInfo with role "Artist"
+        // $accounts = Account::where('is_verify', true)
+        //     ->whereHas('personalInfo', function ($query) {
+        //         $query->where('role', 'Artist');
+        //     })
+        //     ->get();
+        $accounts = Account::where('is_verify', true)->get();
+        return response()->json([
+            'message' => 'Registered artists',
+            'data' => $accounts,
+            'status' => 1,
+        ]);
+    }
+
+    public function enable_or_disable_acc(Request $request)
+    {
+        // Find the account by ID
+        $account = Account::find($request->id);
+
+        // Check if the account exists
+        if (!$account) {
+            return response()->json([
+                'message' => 'Account not found',
+                'status' => 0
+            ], 404);
+        }
+
+        // Update the 'delete' status to true (1)
+        $account->delete = $request->is_disable;
+        $account->save(); // Save the changes
+
+        // Return success response
+        return response()->json([
+            'message' => 'User update successfully',
             'status' => 1,
             'data' => $account // Optional: you can return the updated account data
         ]);

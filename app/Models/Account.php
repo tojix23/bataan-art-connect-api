@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens; // Import the trait
 use App\Models\PersonalInfo;
 use App\Models\ProfilePhoto;
+use App\Models\Certificate;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Account extends Authenticatable
@@ -41,5 +42,9 @@ class Account extends Authenticatable
     public function getRoleAttribute()
     {
         return $this->personalInfo?->role; // Use the relationship to fetch 'role'
+    }
+    public function certificate()
+    {
+        return $this->hasOne(Certificate::class, 'acc_id', 'id'); // Assuming email is the linking field
     }
 }

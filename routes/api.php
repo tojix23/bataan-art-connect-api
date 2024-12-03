@@ -31,4 +31,11 @@ Route::prefix('list')->middleware('auth:sanctum')->group(function () {
 
 Route::prefix('account')->middleware('auth:sanctum')->group(function () {
     Route::post('/verify-users', [AccountController::class, 'verify']);
+    Route::post('/account_update', [AccountController::class, 'enable_or_disable_acc']);
+    Route::get('/accounts', [AccountController::class, 'registered_account']);
+    Route::post('/cancel-verify', [AccountController::class, 'cancel_verify']);
+});
+
+Route::prefix('artist')->middleware('auth:sanctum')->group(function () {
+    Route::get('/registered', [AccountController::class, 'registered_account']);
 });
