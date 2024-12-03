@@ -18,27 +18,31 @@ class ProfilePhotoController extends Controller
         // Handle file upload
         if ($request->hasFile('image')) {
             // Generate the filename based on acc_id
-            $fileName = $request->acc_id . '.' . $request->file('image')->getClientOriginalExtension();
+            $fileName = $request->email . '.' . $request->file('image')->getClientOriginalExtension();
             $dateTime = now()->format('Y-m-d-H-i'); // Get current date and time as 'Y-m-d-H-i'
             // Check if the file already exists in storage
-            $existingFilePath = storage_path('app/public/profile_photos/' . $fileName);
+            // Check if a file with the same email name exists with any image extension
+            $existingFilePathPng = storage_path('app/public/profile_photos/' . $fileName . '.png');
+            $existingFilePathJpg = storage_path('app/public/profile_photos/' . $fileName . '.jpg');
 
-            if (file_exists($existingFilePath)) {
-                // If the file exists, delete it
-                unlink($existingFilePath);
+            // Check and delete if the file exists
+            if (file_exists($existingFilePathPng)) {
+                unlink($existingFilePathPng); // Delete PNG
+            } elseif (file_exists($existingFilePathJpg)) {
+                unlink($existingFilePathJpg); // Delete JPG
             }
 
             // Store the image with the new file name
             $path = $request->file('image')->storeAs(
                 'profile_photos',
-                $dateTime . $fileName,
+                $fileName,
                 'public'
             );
 
             // Save the new image path and the authenticated user's ID to the database
             $profilePhoto = ProfilePhoto::updateOrCreate(
                 ['acc_id' => $request->acc_id], // Check if acc_id exists
-                ['image_path' =>  $path] // Update the image_path or insert new record
+                ['image_path' => asset('storage/' . $path)] // Update the image_path or insert new record
             );
 
             return response()->json([

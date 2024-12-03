@@ -9,6 +9,7 @@ use App\Models\Account;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Models\Certificate;
+use App\Models\Artist;
 
 class AccountController extends Controller
 {
@@ -20,12 +21,10 @@ class AccountController extends Controller
             'last_name' => 'required|string|max:255',
             'main_address' => 'required|string|max:255',
             'sub_address' => 'nullable|string|max:255', // Sub address can be optional
-            'occupation' => 'required|string|max:255',
             'role' => 'required|string|max:255',
             'gender' => 'required|string|max:50', // Gender usually doesn't need 255 characters
             'contact_number' => 'required|string|max:15|unique:personal_infos,contact_number', // Phone numbers typically have a shorter max length
             'birthdate' => 'required|date', // Validate as a valid date
-            'type' => 'required|string|max:50', // Adjusted to string unless it's really an email
             'email' => 'required|email|unique:personal_infos,email', // Added email field explicitly
         ]);
 
@@ -47,24 +46,36 @@ class AccountController extends Controller
                 'last_name' => $request->last_name,
                 'main_address' => $request->main_address,
                 'sub_address' => $request->sub_address,
-                'occupation' => $request->occupation,
+                'occupation' => $request->role == 'Artist' ? $request->occupation : "Client",
                 'role' => $request->role,
                 'gender' => $request->gender,
                 'contact_number' => $request->contact_number,
                 'birthdate' => $request->birthdate,
                 'username' => $request->username,
-                'type' => $request->type,
+                'type' => $request->role == 'Artist' ?  $request->type : "Client",
                 'email' => $request->email,
             ]);
 
             $account = Account::create([
                 'personal_id' => $personalInformation->id,  // Assuming a relationship between the two tables
                 'fullname' => $request->first_name . ' ' . $request->last_name,
-                'type' =>  $request->type,
+                'type' =>  $request->role == 'Artist' ?  $request->type : "Client",
                 'email' => $request->email,
                 'email_verified_at' => "-",
                 'password' => Hash::make($request->password), // Hash the password for security
             ]);
+
+            if ($request->role == 'Artist') { //if role is artist
+                $artist = Artist::create([
+                    'personal_id' => $personalInformation->id,  // Assuming a relationship between the two tables
+                    'acc_id' => $account->id,
+                    'full_name' => $request->first_name . ' ' . $request->last_name,
+                    'price_range' => 00.00,
+                    'occupation' => $request->occupation,
+                ]);
+            }
+
+
 
             $certificateFilePath = null;
             if ($request->hasFile('certificate_file')) {
