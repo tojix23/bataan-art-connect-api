@@ -30,4 +30,8 @@ class PersonalInfo extends Model
     // protected $casts = [
     //     'birthdate' => 'date', // Cast birthdate to a date object
     // ];
+    public function personalInfo()
+    {
+        return $this->hasOne(PersonalInfo::class, 'email', 'email'); // Assuming email is the linking field
+    }
 }

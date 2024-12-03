@@ -104,21 +104,37 @@ class AccountController extends Controller
 
     public function login(Request $request)
     {
+        // Validate the email and password
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        // If validation fails, return error response
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation errors',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        // Find the account by email
         $account = Account::where('email', '=', $request->email)->first();
         if ($account) {
+            // Check if the password matches
             if (Hash::check($request->password, $account->password)) {
                 if ($account->is_verify == 1) {
                     $token = $account->createToken($request->email)->plainTextToken;
-
+                    $account->load(['personalInfo', 'profilePhoto']);
                     return response()->json([
-                        'message' => 'Authorized!',
+                        'message' => 'Successful Logged In!',
                         'status' => 1,
                         'token' => $token,
                         'data' => $account
                     ]);
                 } else {
                     return response()->json([
-                        'message' => 'Your account is still not verify, Thank you!',
+                        'message' => 'Your account is not yet verified. Please wait for the verification process to complete. Thank you for your patience!',
                         'status' => -2
                     ]);
                 }
@@ -131,7 +147,7 @@ class AccountController extends Controller
         } else {
             return response()->json([
                 'message' => 'No Match Record!',
-                'status' => 0
+                'status' => -3
             ]);
         }
     }

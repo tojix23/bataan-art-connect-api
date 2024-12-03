@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\ProfilePhotoController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,3 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::post('/register', [AccountController::class, 'register']);
 Route::post('/login', [AccountController::class, 'login']);
+
+Route::prefix('profile')->middleware('auth:sanctum')->group(function () {
+    Route::post('/photo', [ProfilePhotoController::class, 'upload']);
+});
