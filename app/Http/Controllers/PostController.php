@@ -88,15 +88,65 @@ class PostController extends Controller
         ]);
     }
 
-    public function unverified_post(Request $request)
+    public function for_verification_post(Request $request)
     {
         // Retrieve all verified posts with their related image posts
-        $posts = Post::where('is_approved', false)->with(['images', 'UserInfo']) // Include related images
+        $posts = Post::with(['images', 'UserInfo']) // Include related images
             ->get();
 
         return response()->json([
             'success' => true,
             'data' => $posts,
+        ]);
+    }
+
+    public function approve_post(Request $request)
+    {
+        // Find the account by ID
+        $post = Post::find($request->post_id);
+
+        // Check if the account exists
+        if (!$post) {
+            return response()->json([
+                'message' => 'Post not found',
+                'status' => 0
+            ], 404);
+        }
+
+        // Update the 'is_verify' status to true (1)
+        $post->is_approved = true;
+        $post->save(); // Save the changes
+
+        // Return success response
+        return response()->json([
+            'message' => 'Post verified successfully',
+            'status' => 1,
+            'data' => $post // Optional: you can return the updated account data
+        ]);
+    }
+
+    public function cancel_post(Request $request)
+    {
+        // Find the account by ID
+        $post = Post::find($request->post_id);
+
+        // Check if the account exists
+        if (!$post) {
+            return response()->json([
+                'message' => 'Post not found',
+                'status' => 0
+            ], 404);
+        }
+
+        // Update the 'is_verify' status to true (1)
+        $post->delete = true;
+        $post->save(); // Save the changes
+
+        // Return success response
+        return response()->json([
+            'message' => 'Post cancel successfully',
+            'status' => 1,
+            'data' => $post // Optional: you can return the updated account data
         ]);
     }
 }

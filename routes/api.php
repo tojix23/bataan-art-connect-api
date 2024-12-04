@@ -43,7 +43,9 @@ Route::prefix('post')->middleware('auth:sanctum')->group(function () {
     Route::post('/display-post', [PostController::class, 'verified_post']);
     Route::post('/add-comment', [CommentController::class, 'add_comment']);
     Route::post('/comments', [CommentController::class, 'list']);
-    Route::get('/list-unverified-post', [PostController::class, 'unverified_post']);
+    Route::get('/artists-post', [PostController::class, 'for_verification_post']);
+    Route::post('/approve-post', [PostController::class, 'approve_post']);
+    Route::post('/cancel-post', [PostController::class, 'cancel_post']);
 });
 
 Route::prefix('artist')->middleware('auth:sanctum')->group(function () {
