@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ProfilePhotoController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\CommentController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -40,6 +41,9 @@ Route::prefix('account')->middleware('auth:sanctum')->group(function () {
 Route::prefix('post')->middleware('auth:sanctum')->group(function () {
     Route::post('/create-post', [PostController::class, 'create_post']);
     Route::post('/display-post', [PostController::class, 'verified_post']);
+    Route::post('/add-comment', [CommentController::class, 'add_comment']);
+    Route::post('/comments', [CommentController::class, 'list']);
+    Route::get('/list-unverified-post', [PostController::class, 'unverified_post']);
 });
 
 Route::prefix('artist')->middleware('auth:sanctum')->group(function () {

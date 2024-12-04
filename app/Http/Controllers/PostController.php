@@ -87,4 +87,16 @@ class PostController extends Controller
             'data' => $posts,
         ]);
     }
+
+    public function unverified_post(Request $request)
+    {
+        // Retrieve all verified posts with their related image posts
+        $posts = Post::where('is_approved', false)->with(['images', 'UserInfo']) // Include related images
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $posts,
+        ]);
+    }
 }
