@@ -13,14 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->integer('acc_id'); // fk account id
-            $table->string('description'); // description
-            $table->integer('like'); // like post
-            $table->boolean('is_approved')->default(0);
+            $table->integer('post_id');
+            $table->integer('acc_id');
+            $table->string('comment');
+            $table->boolean('is_remove');
             $table->timestamps();
-            $table->boolean('delete')->default(0);
         });
     }
 
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('comments');
     }
 };

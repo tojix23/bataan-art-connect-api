@@ -21,7 +21,10 @@ class Account extends Authenticatable
         'password',
         'type',
         'email_verified_at',
-        'email'
+        'email',
+        'is_disable',
+        'is_cancel',
+        'is_verify'
     ];
 
     protected $hidden = [

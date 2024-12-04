@@ -51,7 +51,6 @@ class AccountController extends Controller
                 'gender' => $request->gender,
                 'contact_number' => $request->contact_number,
                 'birthdate' => $request->birthdate,
-                'username' => $request->username,
                 'type' => $request->role == 'Artist' ?  $request->type : "Client",
                 'email' => $request->email,
             ]);
@@ -203,8 +202,22 @@ class AccountController extends Controller
 
     public function cancel_verify(Request $request)
     {
-        // Find the account by email
-        $account = PersonalInfo::where('email', $request->email)->first();
+        // // Find the account by email
+        // $account = PersonalInfo::where('email', $request->email)->first();
+
+        // // Check if the account exists
+        // if (!$account) {
+        //     return response()->json([
+        //         'message' => 'Account not found',
+        //         'status' => 0
+        //     ], 404);
+        // }
+
+        // // Update the 'delete' status to true (1)
+        // $account->delete = 1;
+        // $account->save(); // Save the changes
+        // Find the account by ID
+        $account = Account::where('email', $request->email)->first();
 
         // Check if the account exists
         if (!$account) {
@@ -214,8 +227,8 @@ class AccountController extends Controller
             ], 404);
         }
 
-        // Update the 'delete' status to true (1)
-        $account->delete = 1;
+        // Update the 'is_cancel' status to true (1)
+        $account->is_cancel = true;
         $account->save(); // Save the changes
 
         // Return success response
@@ -256,7 +269,7 @@ class AccountController extends Controller
         }
 
         // Update the 'delete' status to true (1)
-        $account->delete = $request->is_disable;
+        $account->is_disable = $request->is_disable;
         $account->save(); // Save the changes
 
         // Return success response

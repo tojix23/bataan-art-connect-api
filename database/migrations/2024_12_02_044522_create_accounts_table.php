@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('email'); // email which verified
             $table->string('email_verified_at'); // email which verified
             $table->boolean('is_verify')->default(0); // verified account
+            $table->boolean('is_disable')->default(0); // Type (nullable)
+            $table->boolean('is_cancel')->default(0); // Type (nullable)
             $table->timestamps();
             $table->boolean('delete')->default(0);
         });

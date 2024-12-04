@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ProfilePhotoController;
+use App\Http\Controllers\PostController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -34,6 +35,11 @@ Route::prefix('account')->middleware('auth:sanctum')->group(function () {
     Route::post('/account_update', [AccountController::class, 'enable_or_disable_acc']);
     Route::get('/accounts', [AccountController::class, 'registered_account']);
     Route::post('/cancel-verify', [AccountController::class, 'cancel_verify']);
+});
+
+Route::prefix('post')->middleware('auth:sanctum')->group(function () {
+    Route::post('/create-post', [PostController::class, 'create_post']);
+    Route::post('/display-post', [PostController::class, 'verified_post']);
 });
 
 Route::prefix('artist')->middleware('auth:sanctum')->group(function () {
