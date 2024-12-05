@@ -6,6 +6,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ProfilePhotoController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ArtistController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -50,4 +51,5 @@ Route::prefix('post')->middleware('auth:sanctum')->group(function () {
 
 Route::prefix('artist')->middleware('auth:sanctum')->group(function () {
     Route::get('/registered', [AccountController::class, 'registered_account']);
+    Route::post('/artist-list-by-type', [ArtistController::class, 'artist_list']);
 });

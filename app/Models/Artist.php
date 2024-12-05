@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Account;
 
 class Artist extends Model
 {
@@ -17,4 +18,13 @@ class Artist extends Model
         'price_range',
         'occupation',
     ];
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class, 'acc_id', 'personal_id');
+    }
+    public function profilePhoto()
+    {
+        return $this->hasOne(ProfilePhoto::class, 'acc_id', 'acc_id'); // 'acc_id' links the two tables
+    }
 }
