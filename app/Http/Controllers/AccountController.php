@@ -69,7 +69,8 @@ class AccountController extends Controller
                     'personal_id' => $personalInformation->id,  // Assuming a relationship between the two tables
                     'acc_id' => $account->id,
                     'full_name' => $request->first_name . ' ' . $request->last_name,
-                    'price_range' => 00.00,
+                    'price_range_max' => 00.00,
+                    'price_range_min' => 00.00,
                     'occupation' => $request->occupation,
                 ]);
             }

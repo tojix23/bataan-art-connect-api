@@ -15,7 +15,8 @@ class Artist extends Model
         'personal_id',
         'acc_id',
         'full_name',
-        'price_range',
+        'price_range_max',
+        'price_range_min',
         'occupation',
     ];
 
@@ -26,5 +27,15 @@ class Artist extends Model
     public function profilePhoto()
     {
         return $this->hasOne(ProfilePhoto::class, 'acc_id', 'acc_id'); // 'acc_id' links the two tables
+    }
+
+    public function personalInfo()
+    {
+        return $this->hasOne(PersonalInfo::class, 'id', 'personal_id'); // Assuming email is the linking field
+    }
+
+    public function certificate()
+    {
+        return $this->hasOne(Certificate::class, 'acc_id', 'acc_id'); // Assuming email is the linking field
     }
 }

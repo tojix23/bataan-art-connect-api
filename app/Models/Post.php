@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ImagePost;
 use App\Models\Account;
+use App\Models\VideoPost;
 
 class Post extends Model
 {
@@ -26,5 +27,10 @@ class Post extends Model
     public function UserInfo()
     {
         return $this->hasOne(Account::class, 'id', 'acc_id'); // Assuming email is the linking field
+    }
+
+    public function videos()
+    {
+        return $this->hasMany(VideoPost::class, 'post_id');
     }
 }

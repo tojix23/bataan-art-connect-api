@@ -13,16 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('artists', function (Blueprint $table) {
+        Schema::create('video_posts', function (Blueprint $table) {
             $table->id();
-            $table->integer('personal_id');
-            $table->integer('acc_id');
-            $table->string('full_name');
-            $table->double('price_range_min');
-            $table->double('price_range_max');
-            $table->string('occupation');
+            $table->integer('post_id');
+            $table->string('video_path');
             $table->timestamps();
-            $table->boolean('delete')->default(0);
         });
     }
 
@@ -33,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('artists');
+        Schema::dropIfExists('video_posts');
     }
 };

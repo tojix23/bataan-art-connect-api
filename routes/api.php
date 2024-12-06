@@ -37,6 +37,7 @@ Route::prefix('account')->middleware('auth:sanctum')->group(function () {
     Route::post('/account_update', [AccountController::class, 'enable_or_disable_acc']);
     Route::get('/accounts', [AccountController::class, 'registered_account']);
     Route::post('/cancel-verify', [AccountController::class, 'cancel_verify']);
+    Route::post('/update-rate', [ArtistController::class, 'update_service_rate']);
 });
 
 Route::prefix('post')->middleware('auth:sanctum')->group(function () {
@@ -52,4 +53,6 @@ Route::prefix('post')->middleware('auth:sanctum')->group(function () {
 Route::prefix('artist')->middleware('auth:sanctum')->group(function () {
     Route::get('/registered', [AccountController::class, 'registered_account']);
     Route::post('/artist-list-by-type', [ArtistController::class, 'artist_list']);
+    Route::post('/get-rate', [ArtistController::class, 'get_rate']);
+    Route::post('/artist-by-id', [ArtistController::class, 'get_artist_by_id']);
 });

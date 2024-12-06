@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->integer('acc_id'); // fk account id
-            $table->string('description'); // description
+            $table->text('description'); // long description
             $table->integer('like'); // like post
             $table->boolean('is_approved')->default(0);
             $table->timestamps();
