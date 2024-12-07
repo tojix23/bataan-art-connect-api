@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Account;
+use App\Models\MessageReply;
 
 class Message extends Model
 {
@@ -16,4 +18,24 @@ class Message extends Model
         'content',
         'is_read'
     ];
+
+    public function accountInfo()
+    {
+        return $this->hasOne(Account::class, 'id', 'acc_id'); // Assuming email is the linking field
+    }
+
+    public function replies()
+    {
+        return $this->hasMany(MessageReply::class, 'message_id', 'id');
+    }
+
+    public function sender()
+    {
+        return $this->hasOne(Account::class, 'id', 'acc_id');
+    }
+
+    public function reciever()
+    {
+        return $this->hasOne(Account::class, 'id', 'reciever_id');
+    }
 }

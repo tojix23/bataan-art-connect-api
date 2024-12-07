@@ -7,6 +7,8 @@ use App\Http\Controllers\ProfilePhotoController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\ConnectionController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -56,4 +58,14 @@ Route::prefix('artist')->middleware('auth:sanctum')->group(function () {
     Route::post('/artist-list-by-type', [ArtistController::class, 'artist_list']);
     Route::post('/get-rate', [ArtistController::class, 'get_rate']);
     Route::post('/artist-by-id', [ArtistController::class, 'get_artist_by_id']);
+});
+
+Route::prefix('message')->middleware('auth:sanctum')->group(function () {
+    Route::post('/send', [MessageController::class, 'send_a_message']);
+    Route::post('/get-message', [MessageController::class, 'get_my_message']);
+    Route::post('/reply-message', [MessageController::class, 'reply_a_message']);
+});
+
+Route::prefix('connection')->middleware('auth:sanctum')->group(function () {
+    Route::post('/send-request', [ConnectionController::class, 'send_connection']);
 });
