@@ -236,4 +236,20 @@ class PostController extends Controller
             'data' => $post // Optional: you can return the updated account data
         ]);
     }
+
+    public function display_post_by_search_artist(Request $request)
+    {
+        // Retrieve all verified posts with their related image posts
+        $posts = Post::where('is_approved', 1)->where('acc_id', $request->acc_id) // Only approved posts
+            ->with('images') // Include related images
+            ->with('videos')
+            ->with('ProfilePhoto')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $posts,
+        ]);
+    }
 }

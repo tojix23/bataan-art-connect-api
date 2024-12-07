@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\ImagePost;
 use App\Models\Account;
 use App\Models\VideoPost;
+use App\Models\ProfilePhoto;
 
 class Post extends Model
 {
@@ -32,5 +33,10 @@ class Post extends Model
     public function videos()
     {
         return $this->hasMany(VideoPost::class, 'post_id');
+    }
+
+    public function ProfilePhoto()
+    {
+        return $this->hasMany(ProfilePhoto::class, 'acc_id', 'acc_id');
     }
 }

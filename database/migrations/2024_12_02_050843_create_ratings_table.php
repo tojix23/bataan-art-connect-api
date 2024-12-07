@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('ratings', function (Blueprint $table) {
             $table->id();
             $table->integer('acc_id');
+            $table->integer('rated_by');
             $table->string('rated_for');
             $table->integer('rating_value');
             $table->text('comment');
