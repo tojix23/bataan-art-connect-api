@@ -9,6 +9,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ConnectionController;
+use App\Http\Controllers\RatingController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -72,4 +73,10 @@ Route::prefix('connection')->middleware('auth:sanctum')->group(function () {
     Route::post('/connection-status-artist-client', [ConnectionController::class, 'connection_status_artist_and_client']);
     Route::post('/connection-status-artist', [ConnectionController::class, 'connection_status_artist']);
     Route::post('/approve-connection', [ConnectionController::class, 'approve_connection']);
+});
+
+Route::prefix('task')->middleware('auth:sanctum')->group(function () {
+    Route::post('/send-task', [RatingController::class, 'send_task']);
+    Route::post('/get-task-by-client', [RatingController::class, 'get_task_by_client']);
+    Route::post('/get-task-by-artist', [RatingController::class, 'get_task_by_artist']);
 });
