@@ -135,14 +135,23 @@ class AccountController extends Controller
             // Check if the password matches
             if (Hash::check($request->password, $account->password)) {
                 if ($account->is_verify == 1) {
-                    $token = $account->createToken($request->email)->plainTextToken;
-                    $account->load(['personalInfo', 'profilePhoto']);
-                    return response()->json([
-                        'message' => 'Successful Logged In!',
-                        'status' => 1,
-                        'token' => $token,
-                        'data' => $account
-                    ]);
+                    if ($account->is_disable == 1) {
+                        return response()->json([
+                            'message' => 'Your account has been disabled. Please contact your administrator. Thank you',
+                            'status' => -4,
+                            'token' => null,
+                            'data' => $account
+                        ]);
+                    } else {
+                        $token = $account->createToken($request->email)->plainTextToken;
+                        $account->load(['personalInfo', 'profilePhoto']);
+                        return response()->json([
+                            'message' => 'Successful Logged In!',
+                            'status' => 1,
+                            'token' => $token,
+                            'data' => $account
+                        ]);
+                    }
                 } else {
                     return response()->json([
                         'message' => 'Your account is not yet verified. Please wait for the verification process to complete. Thank you for your patience!',

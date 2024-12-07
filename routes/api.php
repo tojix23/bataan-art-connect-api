@@ -68,4 +68,8 @@ Route::prefix('message')->middleware('auth:sanctum')->group(function () {
 
 Route::prefix('connection')->middleware('auth:sanctum')->group(function () {
     Route::post('/send-request', [ConnectionController::class, 'send_connection']);
+    Route::post('/connection-status-client', [ConnectionController::class, 'connection_status_client']);
+    Route::post('/connection-status-artist-client', [ConnectionController::class, 'connection_status_artist_and_client']);
+    Route::post('/connection-status-artist', [ConnectionController::class, 'connection_status_artist']);
+    Route::post('/approve-connection', [ConnectionController::class, 'approve_connection']);
 });
