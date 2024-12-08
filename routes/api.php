@@ -79,4 +79,7 @@ Route::prefix('task')->middleware('auth:sanctum')->group(function () {
     Route::post('/send-task', [RatingController::class, 'send_task']);
     Route::post('/get-task-by-client', [RatingController::class, 'get_task_by_client']);
     Route::post('/get-task-by-artist', [RatingController::class, 'get_task_by_artist']);
+    Route::post('/cancel-task-by-id', [RatingController::class, 'cancel_task_by_id']);
+    Route::post('/get-task-for-confirm-in-artist', [RatingController::class, 'get_task_by_artist_for_confirmation']);
+    Route::post('/get-task-for-confirmed-in-artist', [RatingController::class, 'get_task_by_artist_confirmed']);
 });

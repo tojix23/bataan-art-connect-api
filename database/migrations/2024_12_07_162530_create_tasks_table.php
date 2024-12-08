@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('title'); // Task title
             $table->text('description')->nullable(); // Detailed task description
             $table->enum('status', ['pending', 'in_progress', 'completed', 'cancelled'])->default('pending'); // Task status
+            $table->boolean('confirm_by_assignee')->default(0);
+            $table->dateTime('start_date')->nullable(); // Optional deadline for task completion
             $table->dateTime('due_date')->nullable(); // Optional deadline for task completion
             $table->timestamps();
         });

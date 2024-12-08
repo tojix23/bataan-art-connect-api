@@ -17,7 +17,8 @@ class Task extends Model
         'description',
         'status',
         'creator_name',
-        'assignee_name'
+        'assignee_name',
+        'start_date'
     ];
     public function getByArtist()
     {
