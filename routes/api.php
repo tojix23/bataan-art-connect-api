@@ -51,6 +51,7 @@ Route::prefix('account')->middleware('auth:sanctum')->group(function () {
 Route::prefix('post')->middleware('auth:sanctum')->group(function () {
     Route::post('/create-post', [PostController::class, 'create_post']);
     Route::post('/display-post', [PostController::class, 'verified_post']);
+    Route::post('/get-my-post', [PostController::class, 'get_my_post']);
     Route::post('/display-search-post', [PostController::class, 'display_post_by_search_artist']);
     Route::post('/add-comment', [CommentController::class, 'add_comment']);
     Route::post('/comments', [CommentController::class, 'list']);
@@ -89,4 +90,6 @@ Route::prefix('task')->middleware('auth:sanctum')->group(function () {
     Route::post('/get-task-for-confirmed-in-artist', [RatingController::class, 'get_task_by_artist_confirmed']);
     Route::post('/confirm-task', [RatingController::class, 'confirm_task_by_artist']);
     Route::post('/done-task', [RatingController::class, 'mark_as_done_by_artist']);
+    Route::post('/rate-task', [RatingController::class, 'rate_task']);
+    Route::post('/rate-artist', [RatingController::class, 'get_user_rating']);
 });

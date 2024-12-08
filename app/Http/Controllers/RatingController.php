@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Task;
+use App\Models\Rating;
 
 class RatingController extends Controller
 {
@@ -186,5 +187,43 @@ class RatingController extends Controller
             'message' => 'Task successfully completed.',
             'task' => $task,
         ], 200); // HTTP 200 OK
+    }
+    public function rate_task(Request $request)
+    {
+        // Validate the incoming request data
+        $validatedData = $request->validate([
+            'acc_id' => 'required', // Ensure acc_id refers to a valid user
+            'rated_by' => 'required', // Ensure rated_by refers to a valid user
+            'rated_for' => 'required', // Ensure rated_for refers to a valid user
+            'rating_value' => 'required|integer|min:1|max:5', // Rating value must be between 1 and 5
+            'comment' => 'nullable|string|max:500', // Optional comment
+        ]);
+
+        try {
+            // Create a new rating entry
+            $rating = Rating::create($validatedData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Rating submitted successfully.',
+                'data' => $rating,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to submit the rating. Please try again.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function get_user_rating($userId)
+    {
+        $averageRating = Rating::getAverageRating($userId);
+
+        return response()->json([
+            'success' => true,
+            'average_rating' => $averageRating,
+        ]);
     }
 }

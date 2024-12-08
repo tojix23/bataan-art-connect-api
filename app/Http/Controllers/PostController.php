@@ -175,10 +175,25 @@ class PostController extends Controller
         ]);
     }
 
+    public function get_my_post(Request $request)
+    {
+        // Retrieve all verified posts with their related image posts
+        $posts = Post::where('acc_id', $request->acc_id) // Only approved posts
+            ->with('images') // Include related images
+            ->with('videos')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $posts,
+        ]);
+    }
+
     public function for_verification_post(Request $request)
     {
         // Retrieve all verified posts with their related image posts
-        $posts = Post::with(['images', 'UserInfo']) // Include related images
+        $posts = Post::with(['images', 'videos', 'UserInfo']) // Include related images
             ->get();
 
         return response()->json([

@@ -10,7 +10,7 @@ class ArtistController extends Controller
     public function artist_list(Request $request)
     {
         // Eager load the 'profilePhoto' relationship
-        $verifiedArtists = Artist::with(['profilePhoto', 'personalInfo']) // Load the profile photo relationship
+        $verifiedArtists = Artist::with(['profilePhoto', 'personalInfo', 'ratings']) // Load the profile photo relationship
             ->whereHas('account', function ($query) {
                 $query->where('is_verify', true); // Filter verified artists
             })
@@ -30,6 +30,8 @@ class ArtistController extends Controller
                     'price_range_max' => $artist->price_range_max,
                     'price_range_min' =>  $artist->price_range_min,
                     'image' => $artist->profilePhoto ? $artist->profilePhoto->image_path : null, // Access the image path from the related profile photo
+                    'average_rating' => $artist->average_rating, // Add average rating here
+                    'ratings' => $artist->ratings->pluck('rating_value'), // Only include the rating values
                 ];
             }),
             'status' => 1,

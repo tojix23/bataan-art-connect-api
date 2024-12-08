@@ -38,4 +38,15 @@ class Artist extends Model
     {
         return $this->hasOne(Certificate::class, 'acc_id', 'acc_id'); // Assuming email is the linking field
     }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class, 'acc_id', 'acc_id');
+    }
+
+    // Accessor for average rating
+    public function getAverageRatingAttribute()
+    {
+        return $this->ratings()->avg('rating_value') ?? 0;
+    }
 }
