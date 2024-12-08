@@ -274,4 +274,20 @@ class AccountController extends Controller
             'data' => $account // Optional: you can return the updated account data
         ]);
     }
+
+    public function change_password(Request $request)
+    {
+        // Find the user by email
+        $user = Account::where('email', $request->email)->first();
+
+        // If the user doesn't exist, return an error
+        if (!$user) {
+            return response()->json(['error' => 'Account not found.'], 404);
+        }
+
+        // Update the user's password in the database
+        $user->password = Hash::make($request->new_password); // Hash the password for security
+        $user->save();
+        return response()->json(['message' => 'Password update successfully']);
+    }
 }

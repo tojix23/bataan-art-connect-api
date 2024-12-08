@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\PasswordResetController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,3 +18,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::post('/register', [AccountController::class, 'register']);
+Route::post('send-password-reset', [PasswordResetController::class, 'sendPasswordResetEmail']);
+Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');

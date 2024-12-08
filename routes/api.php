@@ -11,6 +11,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ConnectionController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\PersonalInfoController;
+use App\Http\Controllers\PasswordResetController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,7 +28,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::post('/register', [AccountController::class, 'register']);
 Route::post('/login', [AccountController::class, 'login']);
-
+Route::post('send-password-reset', [PasswordResetController::class, 'sendPasswordResetEmail']);
+Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
 Route::prefix('profile')->middleware('auth:sanctum')->group(function () {
     Route::post('/photo', [ProfilePhotoController::class, 'upload']);
 });
@@ -43,6 +45,7 @@ Route::prefix('account')->middleware('auth:sanctum')->group(function () {
     Route::post('/cancel-verify', [AccountController::class, 'cancel_verify']);
     Route::post('/update-rate', [ArtistController::class, 'update_service_rate']);
     Route::post('/update-bio', [PersonalInfoController::class, 'update_bio']);
+    Route::post('/change-pass', [AccountController::class, 'change_password']);
 });
 
 Route::prefix('post')->middleware('auth:sanctum')->group(function () {
