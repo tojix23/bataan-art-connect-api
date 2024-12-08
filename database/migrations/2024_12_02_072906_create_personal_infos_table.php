@@ -26,6 +26,7 @@ return new class extends Migration
             $table->date('birthdate'); // Birthdate
             $table->string('email')->unique(); // Email (unique)
             $table->string('type')->nullable(); // Type (nullable)
+            $table->text('bio')->nullable();
             $table->timestamps(); // Created_at and Updated_at
             $table->boolean('delete')->default(0);
         });

@@ -212,21 +212,6 @@ class AccountController extends Controller
 
     public function cancel_verify(Request $request)
     {
-        // // Find the account by email
-        // $account = PersonalInfo::where('email', $request->email)->first();
-
-        // // Check if the account exists
-        // if (!$account) {
-        //     return response()->json([
-        //         'message' => 'Account not found',
-        //         'status' => 0
-        //     ], 404);
-        // }
-
-        // // Update the 'delete' status to true (1)
-        // $account->delete = 1;
-        // $account->save(); // Save the changes
-        // Find the account by ID
         $account = Account::where('email', $request->email)->first();
 
         // Check if the account exists

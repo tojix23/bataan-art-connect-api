@@ -18,7 +18,8 @@ class Task extends Model
         'status',
         'creator_name',
         'assignee_name',
-        'start_date'
+        'start_date',
+        'confirm_by_assignee'
     ];
     public function getByArtist()
     {

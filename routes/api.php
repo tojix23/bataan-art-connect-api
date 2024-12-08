@@ -10,6 +10,7 @@ use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ConnectionController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\PersonalInfoController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -41,6 +42,7 @@ Route::prefix('account')->middleware('auth:sanctum')->group(function () {
     Route::get('/accounts', [AccountController::class, 'registered_account']);
     Route::post('/cancel-verify', [AccountController::class, 'cancel_verify']);
     Route::post('/update-rate', [ArtistController::class, 'update_service_rate']);
+    Route::post('/update-bio', [PersonalInfoController::class, 'update_bio']);
 });
 
 Route::prefix('post')->middleware('auth:sanctum')->group(function () {
@@ -82,4 +84,6 @@ Route::prefix('task')->middleware('auth:sanctum')->group(function () {
     Route::post('/cancel-task-by-id', [RatingController::class, 'cancel_task_by_id']);
     Route::post('/get-task-for-confirm-in-artist', [RatingController::class, 'get_task_by_artist_for_confirmation']);
     Route::post('/get-task-for-confirmed-in-artist', [RatingController::class, 'get_task_by_artist_confirmed']);
+    Route::post('/confirm-task', [RatingController::class, 'confirm_task_by_artist']);
+    Route::post('/done-task', [RatingController::class, 'mark_as_done_by_artist']);
 });

@@ -21,6 +21,7 @@ class PersonalInfo extends Model
         'birthdate',
         'type',
         'email',
+        'bio'
     ];
     protected $hidden = [
         // 'password', // Hide the password in JSON responses

@@ -134,4 +134,57 @@ class RatingController extends Controller
             'data' => $task
         ]);
     }
+
+    public function confirm_task_by_artist(Request $request)
+    {
+        // Validate the request to ensure a task ID is provided
+        $validated = $request->validate([
+            'task_id' => 'required', // Ensure the task exists in the database
+        ]);
+
+        // Find the task by ID
+        $task = Task::find($validated['task_id']);
+
+        // Check if the task is already cancelled
+        if ($task->status === 'Cancelled') {
+            return response()->json([
+                'message' => 'Task is already cancelled.',
+            ], 400); // Return a bad request status
+        }
+
+        // Update the task status to 'Cancelled'
+        $task->update(['confirm_by_assignee' => true]);
+
+        // Return a success response
+        return response()->json([
+            'message' => 'Task successfully accept.',
+            'task' => $task,
+        ], 200); // HTTP 200 OK
+    }
+    public function mark_as_done_by_artist(Request $request)
+    {
+        // Validate the request to ensure a task ID is provided
+        $validated = $request->validate([
+            'task_id' => 'required', // Ensure the task exists in the database
+        ]);
+
+        // Find the task by ID
+        $task = Task::find($validated['task_id']);
+
+        // Check if the task is already cancelled
+        if ($task->status === 'Cancelled') {
+            return response()->json([
+                'message' => 'Task is already cancelled.',
+            ], 400); // Return a bad request status
+        }
+
+        // Update the task status to 'Cancelled'
+        $task->update(['status' => 'completed']);
+
+        // Return a success response
+        return response()->json([
+            'message' => 'Task successfully completed.',
+            'task' => $task,
+        ], 200); // HTTP 200 OK
+    }
 }
