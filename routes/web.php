@@ -19,4 +19,4 @@ Route::get('/', function () {
 });
 Route::post('/register', [AccountController::class, 'register']);
 Route::post('send-password-reset', [PasswordResetController::class, 'sendPasswordResetEmail']);
-Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+#Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
