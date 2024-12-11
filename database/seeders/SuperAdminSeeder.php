@@ -48,7 +48,7 @@ class SuperAdminSeeder extends Seeder
                     'type' => 'Super Admin',
                     'email_verified_at' => '-',
                     'is_verify' => true,
-                    'password' => Hash::make('bataanadmin!'),
+                    'password' => Hash::make('bataanadmin!!2024!'),
                 ]
             );
         });
