@@ -93,4 +93,33 @@ class ConnectionController extends Controller
             'connection' => $connection,
         ]);
     }
+
+    public function reject_connection(Request $request)
+    {
+        $request->validate([
+            'connection_id' => 'required', // Ensure user exists
+        ]);
+
+        // Find the connection by acc_id and connected_id
+        $connection = Connection::where('id', $request->connection_id)
+            ->where('status', 'pending') // Only approve pending connections
+            ->first();
+        // If the connection doesn't exist or isn't pending, return an error
+        if (!$connection) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Connection request not found or already approved.',
+            ], 404);
+        }
+
+        // Update the status to 'approved'
+        $connection->status = 'blocked';
+        $connection->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Connection blocked successfully.',
+            'connection' => $connection,
+        ]);
+    }
 }

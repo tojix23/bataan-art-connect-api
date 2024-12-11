@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\RegistrationEmail;
+use App\Mail\RejectEmail;
+use App\Mail\Verified;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Models\PersonalInfo;
@@ -25,9 +29,9 @@ class AccountController extends Controller
             'gender' => 'required|string|max:50', // Gender usually doesn't need 255 characters
             'contact_number' => 'required|string|max:15|unique:personal_infos,contact_number', // Phone numbers typically have a shorter max length
             'birthdate' => 'required|date', // Validate as a valid date
-            'email' => 'required|email|unique:personal_infos,email', // Added email field explicitly
+            'email' => 'required|email', // Added email field explicitly
+            'password' => 'required|string|min:8', // Password validation with confirmation
         ]);
-
 
         // If validation fails, return error response
         if ($validator->fails()) {
@@ -38,69 +42,163 @@ class AccountController extends Controller
         }
 
         try {
-            DB::beginTransaction();
+            // Check if the email already exists
+            $existingAccount = Account::where('email', '=', $request->email)->latest()
+                ->first();
 
-            // Create new personal information record
-            $personalInformation = PersonalInfo::create([
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
-                'main_address' => $request->main_address,
-                'sub_address' => $request->sub_address,
-                'occupation' => $request->role == 'Artist' ? $request->occupation : "Client",
-                'role' => $request->role,
-                'gender' => $request->gender,
-                'contact_number' => $request->contact_number,
-                'birthdate' => $request->birthdate,
-                'type' => $request->role == 'Artist' ?  $request->type : "Client",
-                'email' => $request->email,
-            ]);
+            if ($existingAccount) {
+                // If account exists, check if it's rejected (is_cancel == 1) or awaiting verification (is_verify == 0)
+                if ($existingAccount->is_cancel == 0 && $existingAccount->is_verify == 0) {
+                    // Email is already registered and under verification
+                    return response()->json([
+                        'message' => 'This email is already registered and awaiting verification.',
+                        'status' => 200,
+                    ], 200);
+                } elseif ($existingAccount->is_cancel == 1) {
+                    // If no account is found with the same email, proceed with registration
+                    DB::beginTransaction();
 
-            $account = Account::create([
-                'personal_id' => $personalInformation->id,  // Assuming a relationship between the two tables
-                'fullname' => $request->first_name . ' ' . $request->last_name,
-                'type' =>  $request->role == 'Artist' ?  $request->type : "Client",
-                'email' => $request->email,
-                'email_verified_at' => "-",
-                'password' => Hash::make($request->password), // Hash the password for security
-            ]);
+                    // Create new personal information record
+                    $personalInformation = PersonalInfo::create([
+                        'first_name' => $request->first_name,
+                        'last_name' => $request->last_name,
+                        'main_address' => $request->main_address,
+                        'sub_address' => $request->sub_address,
+                        'occupation' => $request->role == 'Artist' ? $request->occupation : "Client",
+                        'role' => $request->role,
+                        'gender' => $request->gender,
+                        'contact_number' => $request->contact_number,
+                        'birthdate' => $request->birthdate,
+                        'type' => $request->role == 'Artist' ? $request->type : "Client",
+                        'email' => $request->email,
+                    ]);
 
-            if ($request->role == 'Artist') { //if role is artist
-                $artist = Artist::create([
+                    // Create new account record
+                    $account = Account::create([
+                        'personal_id' => $personalInformation->id,  // Assuming a relationship between the two tables
+                        'fullname' => $request->first_name . ' ' . $request->last_name,
+                        'type' => $request->role == 'Artist' ? $request->type : "Client",
+                        'email' => $request->email,
+                        'email_verified_at' => "-",
+                        'password' => Hash::make($request->password),
+                    ]);
+
+                    // Handle Artist role registration if applicable
+                    $certificateFilePath = null;
+                    if ($request->role == 'Artist') {
+                        $artist = Artist::create([
+                            'personal_id' => $personalInformation->id,
+                            'acc_id' => $account->id,
+                            'full_name' => $request->first_name . ' ' . $request->last_name,
+                            'price_range_max' => 00.00,
+                            'price_range_min' => 00.00,
+                            'occupation' => $request->occupation,
+                        ]);
+
+                        // Handle certificate file upload
+                        if ($request->hasFile('certificate_file')) {
+                            $certificateFile = $request->file('certificate_file');
+                            $certificateFilePath = $certificateFile->store('certificates', 'public');
+                        }
+
+                        // Save file path to certificates table
+                        if ($certificateFilePath) {
+                            Certificate::create([
+                                'acc_id' => $account->id,
+                                'file_path' => $certificateFilePath,
+                            ]);
+                        }
+                    }
+
+                    DB::commit();
+
+                    // Send email for registration
+                    $fullname =  $request->first_name . ' ' . $request->last_name;
+                    Mail::to($request->email)->send(new RegistrationEmail($fullname));
+
+                    return response()->json([
+                        'message' => 'You have successfully re-registered. Your account is under verification.',
+                        'status' => 200,
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'message' => 'This email is already verified. Please Login your account',
+                        'status' => 200,
+                    ], 200);
+                }
+            } else {
+                // If no account is found with the same email, proceed with registration
+                DB::beginTransaction();
+
+                // Create new personal information record
+                $personalInformation = PersonalInfo::create([
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'main_address' => $request->main_address,
+                    'sub_address' => $request->sub_address,
+                    'occupation' => $request->role == 'Artist' ? $request->occupation : "Client",
+                    'role' => $request->role,
+                    'gender' => $request->gender,
+                    'contact_number' => $request->contact_number,
+                    'birthdate' => $request->birthdate,
+                    'type' => $request->role == 'Artist' ? $request->type : "Client",
+                    'email' => $request->email,
+                ]);
+
+                // Create new account record
+                $account = Account::create([
                     'personal_id' => $personalInformation->id,  // Assuming a relationship between the two tables
-                    'acc_id' => $account->id,
-                    'full_name' => $request->first_name . ' ' . $request->last_name,
-                    'price_range_max' => 00.00,
-                    'price_range_min' => 00.00,
-                    'occupation' => $request->occupation,
+                    'fullname' => $request->first_name . ' ' . $request->last_name,
+                    'type' => $request->role == 'Artist' ? $request->type : "Client",
+                    'email' => $request->email,
+                    'email_verified_at' => "-",
+                    'password' => Hash::make($request->password),
                 ]);
+
+                // Handle Artist role registration if applicable
+                $certificateFilePath = null;
+                if ($request->role == 'Artist') {
+                    $artist = Artist::create([
+                        'personal_id' => $personalInformation->id,
+                        'acc_id' => $account->id,
+                        'full_name' => $request->first_name . ' ' . $request->last_name,
+                        'price_range_max' => 00.00,
+                        'price_range_min' => 00.00,
+                        'occupation' => $request->occupation,
+                    ]);
+
+                    // Handle certificate file upload
+                    if ($request->hasFile('certificate_file')) {
+                        $certificateFile = $request->file('certificate_file');
+                        $certificateFilePath = $certificateFile->store('certificates', 'public');
+                    }
+
+                    // Save file path to certificates table
+                    if ($certificateFilePath) {
+                        Certificate::create([
+                            'acc_id' => $account->id,
+                            'file_path' => $certificateFilePath,
+                        ]);
+                    }
+                }
+
+                DB::commit();
+
+                // Send email for registration
+                $fullname =  $request->first_name . ' ' . $request->last_name;
+                Mail::to($request->email)->send(new RegistrationEmail($fullname));
+
+                // Return success response
+                return response()->json([
+                    'message' => 'Your account has been successfully created. Please wait for the verification process. Also please check your email for updates.Thank you!',
+                    'data' => [
+                        'Info' => $personalInformation,
+                        'account' => $account,
+                        'certificate' => $certificateFilePath
+                    ],
+                    'status' => 201,
+                ], 201);
             }
-
-
-
-            $certificateFilePath = null;
-            if ($request->hasFile('certificate_file')) {
-                $certificateFile = $request->file('certificate_file');
-                $certificateFilePath = $certificateFile->store('certificates', 'public'); // Store in the 'public/certificates' directory
-            }
-            // Save file path to certificates table
-            if ($certificateFilePath) {
-                Certificate::create([
-                    'acc_id' => $account->id, // Assuming acc_id links to the account ID
-                    'file_path' => $certificateFilePath,
-                ]);
-            }
-            DB::commit();
-
-            // Return success response
-            return response()->json([
-                'message' => 'User registered successfully.',
-                'data' => [
-                    'Info' => $personalInformation,
-                    'account' => $account,
-                    'certificate' => $certificateFilePath
-                ],
-                'status' => 201,
-            ], 201);
         } catch (\Exception $e) {
             // Rollback on error
             DB::rollBack();
@@ -112,6 +210,7 @@ class AccountController extends Controller
             ], 500);
         }
     }
+
 
     public function login(Request $request)
     {
@@ -130,7 +229,7 @@ class AccountController extends Controller
         }
 
         // Find the account by email
-        $account = Account::where('email', '=', $request->email)->first();
+        $account = Account::where('email', '=', $request->email)->where('is_verify', true)->first();
         if ($account) {
             // Check if the password matches
             if (Hash::check($request->password, $account->password)) {
@@ -201,7 +300,8 @@ class AccountController extends Controller
         // Update the 'is_verify' status to true (1)
         $account->is_verify = 1;
         $account->save(); // Save the changes
-
+        $fullname = $account->fullname;
+        Mail::to($account->email)->send(new Verified($fullname));
         // Return success response
         return response()->json([
             'message' => 'User verified successfully',
@@ -225,7 +325,8 @@ class AccountController extends Controller
         // Update the 'is_cancel' status to true (1)
         $account->is_cancel = true;
         $account->save(); // Save the changes
-
+        $fullname = $account->fullname;
+        Mail::to($request->email)->send(new RejectEmail($request->reason, $fullname));
         // Return success response
         return response()->json([
             'message' => 'User verification cancelled successfully',

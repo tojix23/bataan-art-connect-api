@@ -49,4 +49,15 @@ class Artist extends Model
     {
         return $this->ratings()->avg('rating_value') ?? 0;
     }
+
+    public function rating()
+    {
+        return $this->hasOne(Rating::class, 'acc_id', 'acc_id');
+    }
+
+    // Accessor for average rating
+    public function getAverageRatingOfArtistAttribute()
+    {
+        return $this->rating()->avg('rating_value') ?? 0;
+    }
 }

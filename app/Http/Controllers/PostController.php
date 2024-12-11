@@ -267,4 +267,140 @@ class PostController extends Controller
             'data' => $posts,
         ]);
     }
+
+    public function update_post(Request $request)
+    {
+        // Validate the request
+        $validated = $request->validate([
+            'post_id' => 'required|integer|exists:posts,id',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max size 2MB
+            'video' => 'nullable|mimes:mp4,avi,mov,mkv|max:10240', // Max size 10MB
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Find the post
+            $post = Post::find($request->post_id);
+
+            // Update description
+            $post->description = $request->description;
+            $post->save();
+
+            // Handle image update
+            if ($request->hasFile('image')) {
+                $existingImage = $post->images()->first();
+                if ($existingImage) {
+                    // Delete old image if it exists
+                    Storage::delete('public/' . $existingImage->image_path);
+                    $existingImage->delete();
+                }
+
+                // Save new image
+                $fileName = Str::uuid() . '.' . $request->file('image')->getClientOriginalExtension();
+                $storagePath = "post_images/{$fileName}";
+                $request->file('image')->storeAs('public', $storagePath);
+
+                $post->images()->create([
+                    'image_path' => url("storage/{$storagePath}"),
+                ]);
+            }
+
+            // Handle video update
+            if ($request->hasFile('video')) {
+                $existingVideo = $post->videos()->first();
+                if ($existingVideo) {
+                    // Delete old video if it exists
+                    Storage::delete('public/' . $existingVideo->video_path);
+                    $existingVideo->delete();
+                }
+
+                // Save new video
+                $fileName = Str::uuid() . '.' . $request->file('video')->getClientOriginalExtension();
+                $storagePath = "post_videos/{$fileName}";
+                $request->file('video')->storeAs('public', $storagePath);
+
+                $post->videos()->create([
+                    'video_path' => url("storage/{$storagePath}"),
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Post updated successfully.',
+                'updatedImages' => $post->images,
+                'updatedVideos' => $post->videos,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update post. ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+    public function delete_post(Request $request)
+    {
+        // Validate the incoming request
+        $validated = $request->validate([
+            'post_id' => 'required|integer|exists:posts,id', // Ensure post_id is valid and exists
+        ]);
+
+        try {
+            // Begin transaction for data integrity
+            DB::beginTransaction();
+
+            // Find the post by ID
+            $post = Post::find($request->post_id);
+
+            // Check if the post exists
+            if (!$post) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Post not found',
+                ], 404);
+            }
+
+            // // Delete associated images if they exist
+            // $images = $post->images;
+            // foreach ($images as $image) {
+            //     Storage::delete('public/' . $image->image_path); // Delete the image file
+            //     $image->delete(); // Delete the image record
+            // }
+
+            // // Delete associated videos if they exist
+            // $videos = $post->videos;
+            // foreach ($videos as $video) {
+            //     Storage::delete('public/' . $video->video_path); // Delete the video file
+            //     $video->delete(); // Delete the video record
+            // }
+
+            // Delete the post
+            $post->delete();
+            $video = ImagePost::find($request->post_id);
+            $video->delete();
+            $image = VideoPost::find($request->post_id);
+            $image->delete();
+
+            // Commit transaction
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Post deleted successfully.',
+            ]);
+        } catch (\Exception $e) {
+            // Rollback on failure
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete post. ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }

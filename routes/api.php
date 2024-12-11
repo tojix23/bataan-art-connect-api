@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/register', [AccountController::class, 'register']);
 Route::post('/login', [AccountController::class, 'login']);
 Route::post('send-password-reset', [PasswordResetController::class, 'sendPasswordResetEmail']);
+Route::post('register-email', [AccountController::class, 'email_registration']);
 Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
 Route::prefix('profile')->middleware('auth:sanctum')->group(function () {
     Route::post('/photo', [ProfilePhotoController::class, 'upload']);
@@ -58,6 +59,8 @@ Route::prefix('post')->middleware('auth:sanctum')->group(function () {
     Route::get('/artists-post', [PostController::class, 'for_verification_post']);
     Route::post('/approve-post', [PostController::class, 'approve_post']);
     Route::post('/cancel-post', [PostController::class, 'cancel_post']);
+    Route::post('/update-post', [PostController::class, 'update_post']);
+    Route::post('/delete-post', [PostController::class, 'delete_post']);
 });
 
 Route::prefix('artist')->middleware('auth:sanctum')->group(function () {
@@ -79,6 +82,7 @@ Route::prefix('connection')->middleware('auth:sanctum')->group(function () {
     Route::post('/connection-status-artist-client', [ConnectionController::class, 'connection_status_artist_and_client']);
     Route::post('/connection-status-artist', [ConnectionController::class, 'connection_status_artist']);
     Route::post('/approve-connection', [ConnectionController::class, 'approve_connection']);
+    Route::post('/reject-connection', [ConnectionController::class, 'reject_connection']);
 });
 
 Route::prefix('task')->middleware('auth:sanctum')->group(function () {

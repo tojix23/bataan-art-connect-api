@@ -87,7 +87,7 @@ class ArtistController extends Controller
 
     public function get_artist_by_id(Request $request)
     {
-        $artist = Artist::with(['personalInfo', 'certificate', 'profilePhoto']) // Eager load personalInfo relationship
+        $artist = Artist::with(['personalInfo', 'certificate', 'profilePhoto', 'rating']) // Eager load personalInfo relationship
             ->where('acc_id', $request->acc_id) // Filter by unverified users
             ->get();
         return response()->json([
