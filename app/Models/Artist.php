@@ -52,7 +52,7 @@ class Artist extends Model
 
     public function rating()
     {
-        return $this->hasOne(Rating::class, 'acc_id', 'acc_id');
+        return $this->hasMany(Rating::class, 'acc_id', 'acc_id');
     }
 
     // Accessor for average rating
