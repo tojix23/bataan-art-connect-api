@@ -402,11 +402,25 @@ class PostController extends Controller
             // }
 
             // Delete the post
+            // $post->delete();
+            // $video = ImagePost::find($request->post_id);
+            // $video->delete();
+            // $image = VideoPost::find($request->post_id);
+            // $image->delete();
+            // Delete the post
             $post->delete();
             $video = ImagePost::find($request->post_id);
-            $video->delete();
+            if ($video) {
+                $video->delete();
+            }
+            //dd("video", $video);
+            //$video->delete();
             $image = VideoPost::find($request->post_id);
-            $image->delete();
+            //dd($image, "image");
+            if ($image) {
+                $image->delete();
+            }
+            // $image->delete();
 
             // Commit transaction
             DB::commit();
