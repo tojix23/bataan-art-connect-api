@@ -14,6 +14,7 @@ use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ArtistPackageController;
 use App\Http\Controllers\LikePostController;
+use App\Http\Controllers\NotificationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -107,4 +108,9 @@ Route::prefix('package')->middleware('auth:sanctum')->group(function () {
     Route::post('/get-package', [ArtistPackageController::class, 'package_list']);
     Route::post('/enable-or-disable-package', [ArtistPackageController::class, 'enable_disable_package']);
     Route::post('/get-package-booking', [ArtistPackageController::class, 'package_list_enabled']);
+});
+
+Route::prefix('notif')->middleware('auth:sanctum')->group(function () {
+    Route::post('/get-unread-notif-count-conn', [NotificationController::class, 'get_unread_notif_conn']);
+    Route::post('/mark-as-read-conn', [ArtistPackageController::class, 'mark_as_read_conn_notif']);
 });

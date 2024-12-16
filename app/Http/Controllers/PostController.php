@@ -166,6 +166,7 @@ class PostController extends Controller
         $posts = Post::where('is_approved', 1)->where('acc_id', $request->acc_id) // Only approved posts
             ->with('images') // Include related images
             ->with('videos')
+            ->with('postLike')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -181,6 +182,7 @@ class PostController extends Controller
         $posts = Post::where('acc_id', $request->acc_id) // Only approved posts
             ->with('images') // Include related images
             ->with('videos')
+            ->with('postLike')
             ->orderBy('created_at', 'desc')
             ->get();
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Connection;
+use App\Models\Notification;
 
 class ConnectionController extends Controller
 {
@@ -21,6 +22,13 @@ class ConnectionController extends Controller
             'connected_id' => $receiverId,
             'status' => 'pending', // Initial status
 
+        ]);
+
+        $notification = Notification::create([
+            'acc_id' => $acc_id,
+            'notify_id' => $receiverId,
+            'type_notif' => 'Connection', // Initial status
+            'message' => 'Connection request sent', // Initial status
         ]);
 
         return response()->json([
