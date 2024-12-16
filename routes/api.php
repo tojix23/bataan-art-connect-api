@@ -97,6 +97,7 @@ Route::prefix('task')->middleware('auth:sanctum')->group(function () {
     Route::post('/done-task', [RatingController::class, 'mark_as_done_by_artist']);
     Route::post('/rate-task', [RatingController::class, 'rate_task']);
     Route::post('/rate-artist', [RatingController::class, 'get_user_rating']);
+    Route::post('/get-feedback', [RatingController::class, 'get_feedback']);
 });
 
 Route::prefix('package')->middleware('auth:sanctum')->group(function () {

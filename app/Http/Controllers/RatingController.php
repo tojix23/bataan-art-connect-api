@@ -25,6 +25,7 @@ class RatingController extends Controller
 
         // Create a new task using the create method
         Task::create([
+            'package_type' => $request->package_type,
             'creator_acc_id' => $validated['creator_acc_id'],
             'assignee_acc_id' => $validated['assignee_acc_id'],
             'assignee_name' => $validated['assignee_name'],
@@ -224,6 +225,23 @@ class RatingController extends Controller
         return response()->json([
             'success' => true,
             'average_rating' => $averageRating,
+        ]);
+    }
+
+    public function get_feedback(Request $request)
+    {
+        // Retrieve a specific task by ID
+        $rate = Rating::where('rated_for', $request->task_id)->get();
+
+        // Check if the task exists
+        if (!$rate) {
+            return response()->json([
+                'message' => 'ratings not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'data' => $rate
         ]);
     }
 }
