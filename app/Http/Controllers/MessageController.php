@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Message;
 use App\Models\MessageReply;
+use App\Models\Notification;
 
 class MessageController extends Controller
 {
@@ -26,6 +27,14 @@ class MessageController extends Controller
             'reciever_id' => $validated['reciever_id'],
             'content' => $validated['content'],
             'is_read' => $validated['is_read'] ?? false, // Default to false if not provided
+        ]);
+
+
+        $notification = Notification::create([
+            'acc_id' => $validated['sender_id'],
+            'notify_id' => $validated['reciever_id'],
+            'type_notif' => 'Inbox', // Initial status
+            'message' => $request->current_username . ' Sent you a message', // Initial status
         ]);
 
         // Return a response (could be success message or the created message)
@@ -64,6 +73,13 @@ class MessageController extends Controller
         ]);
 
         $reply = MessageReply::create($validated);
+
+        $notification = Notification::create([
+            'acc_id' => $validated['sender_id'],
+            'notify_id' => $request->notify_id,
+            'type_notif' => 'Inbox', // Initial status
+            'message' => $request->current_username . ' Replied to your message', // Initial status
+        ]);
 
         return response()->json([
             'success' => true,

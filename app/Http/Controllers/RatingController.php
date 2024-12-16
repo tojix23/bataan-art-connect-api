@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\Rating;
+use App\Models\Notification;
 
 class RatingController extends Controller
 {
@@ -36,6 +37,12 @@ class RatingController extends Controller
             'status' => 'pending'
         ]);
 
+        $notification = Notification::create([
+            'acc_id' => $validated['creator_acc_id'],
+            'notify_id' => $validated['assignee_acc_id'],
+            'type_notif' => 'Engagement', // Initial status
+            'message' => $validated['creator_name'] . ' Send you a task', // Initial status
+        ]);
 
         return response()->json([
             'message' => 'Task created successfully!',
@@ -154,8 +161,17 @@ class RatingController extends Controller
             ], 400); // Return a bad request status
         }
 
+
         // Update the task status to 'Cancelled'
         $task->update(['confirm_by_assignee' => true]);
+
+        $notification = Notification::create([
+            'acc_id' => $request->current_user,
+            'notify_id' =>  $request->notify_id,
+            'type_notif' => 'Engagement', // Initial status
+            'message' => $request->current_user_name . ' Accepted your task', // Initial status
+        ]);
+
 
         // Return a success response
         return response()->json([
@@ -183,6 +199,12 @@ class RatingController extends Controller
         // Update the task status to 'Cancelled'
         $task->update(['status' => 'completed']);
 
+        $notification = Notification::create([
+            'acc_id' => $request->current_user,
+            'notify_id' =>  $request->notify_id,
+            'type_notif' => 'Engagement', // Initial status
+            'message' => $request->current_user_name . ' Completed the task', // Initial status
+        ]);
         // Return a success response
         return response()->json([
             'message' => 'Task successfully completed.',

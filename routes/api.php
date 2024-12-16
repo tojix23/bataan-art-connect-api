@@ -112,5 +112,11 @@ Route::prefix('package')->middleware('auth:sanctum')->group(function () {
 
 Route::prefix('notif')->middleware('auth:sanctum')->group(function () {
     Route::post('/get-unread-notif-count-conn', [NotificationController::class, 'get_unread_notif_conn']);
-    Route::post('/mark-as-read-conn', [ArtistPackageController::class, 'mark_as_read_conn_notif']);
+    Route::post('/mark-as-read-conn', [NotificationController::class, 'mark_as_read_conn_notif']);
+    Route::post('/get-unread-notif-count-engage', [NotificationController::class, 'get_unread_notif_engage']);
+    Route::post('/mark-as-read-engage', [NotificationController::class, 'mark_as_read_engage_notif']);
+    Route::post('/get-unread-notif-count-inbox', [NotificationController::class, 'get_unread_notif_inbox']);
+    Route::post('/mark-as-read-inbox', [NotificationController::class, 'mark_as_read_engage_inbox']);
+    Route::post('/all-notif-unread', [NotificationController::class, 'get_all_notif_unread']);
+    Route::post('/mark_as_read', [NotificationController::class, 'mark_as_read_all']);
 });

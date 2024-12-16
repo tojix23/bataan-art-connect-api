@@ -91,6 +91,14 @@ class ConnectionController extends Controller
             ], 404);
         }
 
+
+        $notification = Notification::create([
+            'acc_id' => $request->current_user,
+            'notify_id' => $request->notify_id,
+            'type_notif' => 'Connection', // Initial status
+            'message' => $request->artist_name . ' approved your request in connection', // Initial status
+        ]);
+
         // Update the status to 'approved'
         $connection->status = 'accepted';
         $connection->save();
@@ -120,6 +128,12 @@ class ConnectionController extends Controller
             ], 404);
         }
 
+        $notification = Notification::create([
+            'acc_id' => $request->current_user,
+            'notify_id' => $request->notify_id,
+            'type_notif' => 'Connection', // Initial status
+            'message' => $request->artist_name . ' blocked your request in connection', // Initial status
+        ]);
         // Update the status to 'approved'
         $connection->status = 'blocked';
         $connection->save();
