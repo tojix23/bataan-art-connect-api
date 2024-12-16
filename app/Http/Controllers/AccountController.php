@@ -222,8 +222,8 @@ class AccountController extends Controller
                 DB::commit();
 
                 // Send email for registration
-                // $fullname =  $request->first_name . ' ' . $request->last_name;
-                // Mail::to($request->email)->send(new RegistrationEmail($fullname));
+                $fullname =  $request->first_name . ' ' . $request->last_name;
+                Mail::to($request->email)->send(new RegistrationEmail($fullname));
 
                 // Return success response
                 return response()->json([
