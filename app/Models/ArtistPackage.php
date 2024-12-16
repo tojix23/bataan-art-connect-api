@@ -5,12 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ID extends Model
+class ArtistPackage extends Model
 {
     use HasFactory;
-    protected $table = 'i_d_s';
+    protected $table = 'artist_packages';
     protected $fillable = [
         'acc_id',
-        'file_path'
+        'package_name',
+        'package_desc',
+        'amount',
+        'is_active',
+        'image_attach'
     ];
 }

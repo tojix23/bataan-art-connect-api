@@ -11,6 +11,7 @@ class Task extends Model
     use HasFactory;
     protected $table = 'tasks';
     protected $fillable = [
+        'package_type',
         'creator_acc_id',
         'assignee_acc_id',
         'title',
@@ -23,11 +24,11 @@ class Task extends Model
     ];
     public function getByArtist()
     {
-        return $this->hasOne(Account::class, 'id', 'assignee_acc_id'); // Assuming email is the linking field
+        return $this->hasOne(Account::class, 'id', 'assignee_acc_id');
     }
 
     public function getByClient()
     {
-        return $this->hasOne(Account::class, 'id', 'creator_acc_id'); // Assuming email is the linking field
+        return $this->hasOne(Account::class, 'id', 'creator_acc_id');
     }
 }

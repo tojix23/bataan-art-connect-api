@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             // Task details
+            $table->integer('package_type')->nullable();
             $table->integer('creator_acc_id');
             $table->string('creator_name');
             $table->integer('assignee_acc_id');

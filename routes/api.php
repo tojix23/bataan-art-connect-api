@@ -12,6 +12,7 @@ use App\Http\Controllers\ConnectionController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\ArtistPackageController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -96,4 +97,11 @@ Route::prefix('task')->middleware('auth:sanctum')->group(function () {
     Route::post('/done-task', [RatingController::class, 'mark_as_done_by_artist']);
     Route::post('/rate-task', [RatingController::class, 'rate_task']);
     Route::post('/rate-artist', [RatingController::class, 'get_user_rating']);
+});
+
+Route::prefix('package')->middleware('auth:sanctum')->group(function () {
+    Route::post('/add-package', [ArtistPackageController::class, 'add_package']);
+    Route::post('/get-package', [ArtistPackageController::class, 'package_list']);
+    Route::post('/enable-or-disable-package', [ArtistPackageController::class, 'enable_disable_package']);
+    Route::post('/get-package-booking', [ArtistPackageController::class, 'package_list_enabled']);
 });

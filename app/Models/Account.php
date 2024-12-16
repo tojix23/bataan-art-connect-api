@@ -9,6 +9,7 @@ use App\Models\PersonalInfo;
 use App\Models\ProfilePhoto;
 use App\Models\Certificate;
 use App\Models\Artist;
+use App\Models\ClientID;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Account extends Authenticatable
@@ -55,5 +56,10 @@ class Account extends Authenticatable
     public function artists()
     {
         return $this->hasMany(Artist::class, 'acc_id', 'personal_id');
+    }
+
+    public function valid_id()
+    {
+        return $this->hasOne(ClientID::class, 'acc_id', 'id'); // Assuming email is the linking field
     }
 }

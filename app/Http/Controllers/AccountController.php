@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Models\Certificate;
 use App\Models\Artist;
+use App\Models\ClientID;
 
 class AccountController extends Controller
 {
@@ -110,6 +111,24 @@ class AccountController extends Controller
                         }
                     }
 
+                    if ($request->role == 'Client') {
+
+                        // Handle certificate file upload
+                        if ($request->hasFile('present_id')) {
+                            $certificateFile = $request->file('present_id');
+                            $certificateFilePath = $certificateFile->store('present_id', 'public');
+                        }
+
+                        // Save file path to certificates table
+                        if ($certificateFilePath) {
+                            ClientID::create([
+                                'acc_id' => $account->id,
+                                'file_path' => $certificateFilePath,
+                                'id_type' => $request->id_type
+                            ]);
+                        }
+                    }
+
                     DB::commit();
 
                     // Send email for registration
@@ -182,11 +201,29 @@ class AccountController extends Controller
                     }
                 }
 
+                if ($request->role == 'Client') {
+
+                    // Handle certificate file upload
+                    if ($request->hasFile('present_id')) {
+                        $certificateFile = $request->file('present_id');
+                        $certificateFilePath = $certificateFile->store('present_id', 'public');
+                    }
+
+                    // Save file path to certificates table
+                    if ($certificateFilePath) {
+                        ClientID::create([
+                            'acc_id' => $account->id,
+                            'file_path' => $certificateFilePath,
+                            'id_type' => $request->id_type
+                        ]);
+                    }
+                }
+
                 DB::commit();
 
                 // Send email for registration
-                $fullname =  $request->first_name . ' ' . $request->last_name;
-                Mail::to($request->email)->send(new RegistrationEmail($fullname));
+                // $fullname =  $request->first_name . ' ' . $request->last_name;
+                // Mail::to($request->email)->send(new RegistrationEmail($fullname));
 
                 // Return success response
                 return response()->json([
@@ -274,7 +311,7 @@ class AccountController extends Controller
     public function pending_users(Request $request)
     {
 
-        $accounts = Account::with(['personalInfo', 'certificate']) // Eager load personalInfo relationship
+        $accounts = Account::with(['personalInfo', 'certificate', 'valid_id']) // Eager load personalInfo relationship
             ->where('is_verify', false) // Filter by unverified users
             ->get();
         return response()->json([

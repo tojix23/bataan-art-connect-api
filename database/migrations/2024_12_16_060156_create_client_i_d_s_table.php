@@ -13,9 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('i_d_s', function (Blueprint $table) {
+        Schema::create('client_i_d_s', function (Blueprint $table) {
             $table->id();
+            $table->string('id_type');
+            $table->integer('acc_id');
+            $table->string('file_path');
             $table->timestamps();
+            $table->boolean('delete')->default(0);
         });
     }
 
@@ -26,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('i_d_s');
+        Schema::dropIfExists('client_i_d_s');
     }
 };
