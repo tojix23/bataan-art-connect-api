@@ -381,10 +381,18 @@ class PostController extends Controller
 
             // Delete the post
             $post->delete();
-            $video = ImagePost::find($request->post_id);
-            $video->delete();
+	    $video = ImagePost::find($request->post_id);
+	    if($video){
+		    $video->delete();
+	    }
+	    //dd("video", $video);
+	    //$video->delete();
             $image = VideoPost::find($request->post_id);
-            $image->delete();
+	    //dd($image, "image");
+	    if($image){
+	     $image->delete();
+	    }
+	   // $image->delete();
 
             // Commit transaction
             DB::commit();
@@ -398,7 +406,8 @@ class PostController extends Controller
             DB::rollBack();
 
             return response()->json([
-                'success' => false,
+		    'success' => false,
+		
                 'message' => 'Failed to delete post. ' . $e->getMessage(),
             ], 500);
         }

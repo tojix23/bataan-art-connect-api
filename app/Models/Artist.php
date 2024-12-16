@@ -11,6 +11,7 @@ class Artist extends Model
     use HasFactory;
 
     protected $table = 'artists';
+    protected $appends = ['average_rating_of_artist'];
     protected $fillable = [
         'personal_id',
         'acc_id',
@@ -52,7 +53,7 @@ class Artist extends Model
 
     public function rating()
     {
-        return $this->hasOne(Rating::class, 'acc_id', 'acc_id');
+        return $this->hasMany(Rating::class, 'acc_id', 'acc_id');
     }
 
     // Accessor for average rating

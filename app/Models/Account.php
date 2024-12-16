@@ -36,7 +36,7 @@ class Account extends Authenticatable
 
     public function personalInfo()
     {
-        return $this->hasOne(PersonalInfo::class, 'email', 'email'); // Assuming email is the linking field
+        return $this->hasOne(PersonalInfo::class, 'id', 'personal_id'); // Assuming email is the linking field
     }
     public function profilePhoto()
     {
