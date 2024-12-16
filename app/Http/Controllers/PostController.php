@@ -259,6 +259,7 @@ class PostController extends Controller
             ->with('images') // Include related images
             ->with('videos')
             ->with('ProfilePhoto')
+            ->with('postLike')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -267,7 +268,26 @@ class PostController extends Controller
             'data' => $posts,
         ]);
     }
+    // public function display_post_by_search_artist(Request $request)
+    // {
+    //     $accId = $request->acc_id; // Get the acc_id from the request
 
+    //     $posts = Post::where('is_approved', 1)
+    //         ->where('acc_id', $request->acc_id) // Filter posts by artist's acc_id
+    //         ->with('images') // Include related images
+    //         ->with('videos') // Include related videos
+    //         ->with('ProfilePhoto') // Include profile photo
+    //         ->with(['currentUserPostLike' => function ($query) use ($accId) {
+    //             $query->where('acc_id', $accId); // Filter likes by the current user
+    //         }])
+    //         ->orderBy('created_at', 'desc')
+    //         ->get();
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'data' => $posts,
+    //     ]);
+    // }
     public function update_post(Request $request)
     {
         // Validate the request

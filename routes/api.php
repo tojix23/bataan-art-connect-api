@@ -13,6 +13,7 @@ use App\Http\Controllers\RatingController;
 use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ArtistPackageController;
+use App\Http\Controllers\LikePostController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -62,6 +63,7 @@ Route::prefix('post')->middleware('auth:sanctum')->group(function () {
     Route::post('/cancel-post', [PostController::class, 'cancel_post']);
     Route::post('/update-post', [PostController::class, 'update_post']);
     Route::post('/delete-post', [PostController::class, 'delete_post']);
+    Route::post('/like-post', [LikePostController::class, 'like_post']);
 });
 
 Route::prefix('artist')->middleware('auth:sanctum')->group(function () {
