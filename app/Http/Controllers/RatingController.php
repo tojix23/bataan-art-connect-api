@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\Rating;
 use App\Models\Notification;
+use App\Models\RatingAttachment;
+use Illuminate\Support\Facades\DB;
 
 class RatingController extends Controller
 {
@@ -211,6 +213,34 @@ class RatingController extends Controller
             'task' => $task,
         ], 200); // HTTP 200 OK
     }
+    // public function rate_task(Request $request)
+    // {
+    //     // Validate the incoming request data
+    //     $validatedData = $request->validate([
+    //         'acc_id' => 'required', // Ensure acc_id refers to a valid user
+    //         'rated_by' => 'required', // Ensure rated_by refers to a valid user
+    //         'rated_for' => 'required', // Ensure rated_for refers to a valid user
+    //         'rating_value' => 'required|integer|min:1|max:5', // Rating value must be between 1 and 5
+    //         'comment' => 'nullable|string|max:500', // Optional comment
+    //     ]);
+
+    //     try {
+    //         // Create a new rating entry
+    //         $rating = Rating::create($validatedData);
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Rating submitted successfully.',
+    //             'data' => $rating,
+    //         ], 201);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Failed to submit the rating. Please try again.',
+    //             'error' => $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
     public function rate_task(Request $request)
     {
         // Validate the incoming request data
@@ -220,11 +250,44 @@ class RatingController extends Controller
             'rated_for' => 'required', // Ensure rated_for refers to a valid user
             'rating_value' => 'required|integer|min:1|max:5', // Rating value must be between 1 and 5
             'comment' => 'nullable|string|max:500', // Optional comment
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Optional image upload
         ]);
+
+        // Begin a database transaction
+        DB::beginTransaction();
 
         try {
             // Create a new rating entry
-            $rating = Rating::create($validatedData);
+            $rating = Rating::create([
+                'acc_id' => $validatedData['acc_id'],
+                'rated_by' => $validatedData['rated_by'],
+                'rated_for' => $validatedData['rated_for'],
+                'rating_value' => $validatedData['rating_value'],
+                'comment' => $validatedData['comment'] ?? null,
+            ]);
+
+            // Handle the image upload if provided
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $filePath = $image->store('uploads/ratings', 'public'); // Store in public/uploads/ratings directory
+
+                // Create a new entry in the RatingAttachment model
+                RatingAttachment::create([
+                    'rating_id' => $rating->id,
+                    'rate_by' => $validatedData['rated_by'],
+                    'file_path' => $filePath,
+                ]);
+            }
+
+            $notification = Notification::create([
+                'acc_id' => $validatedData['rated_by'],
+                'notify_id' =>  $validatedData['acc_id'],
+                'type_notif' => 'Rating', // Initial status
+                'message' => $request->current_user_name . ' rated your task', // Initial status
+            ]);
+
+            // Commit the transaction
+            DB::commit();
 
             return response()->json([
                 'success' => true,
@@ -232,6 +295,9 @@ class RatingController extends Controller
                 'data' => $rating,
             ], 201);
         } catch (\Exception $e) {
+            // Rollback the transaction in case of an error
+            DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to submit the rating. Please try again.',
@@ -253,7 +319,7 @@ class RatingController extends Controller
     public function get_feedback(Request $request)
     {
         // Retrieve a specific task by ID
-        $rate = Rating::where('rated_for', $request->task_id)->get();
+        $rate = Rating::where('rated_for', $request->task_id)->with('attachment')->get();
 
         // Check if the task exists
         if (!$rate) {
